@@ -14,8 +14,10 @@ import Navigation from './Navigation';
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Appointments', href: '/appointments', icon: Calendar },
-  { name: 'Medical Records', href: '/medical-records', icon: FileText },
-  { name: 'Profile', href: '/profile', icon: User },
+  { name: 'Doctors', href: '/doctors', icon: User },
+  { name: 'Patients', href: '/patients', icon: User },
+  // { name: 'Medical Records', href: '/medical-records', icon: FileText },
+  // { name: 'Profile', href: '/profile', icon: User },
 ];
 
 export default function Layout() {

@@ -23,10 +23,11 @@ export default function PatientDetail() {
     try {
       setLoading(true);
       const data = await patientService.getPatient(id!);
+      console.log(data)
       setPatient(data);
       setHasLoaded(true); // Mark as loaded
     } catch (error) {
-      setError(error.message);
+      setError(error instanceof Error ? error.message : 'An unknown error occurred');
     } finally {
       setLoading(false);
     }

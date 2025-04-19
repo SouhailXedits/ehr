@@ -44,7 +44,7 @@ function App() {
             }>
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
-              <Route path="profile" element={<Profile />} />
+              {/* <Route path="profile" element={<Profile />} /> */}
               <Route path="test-auth" element={<TestAuth />} />
               
               {/* Appointments Routes */}
