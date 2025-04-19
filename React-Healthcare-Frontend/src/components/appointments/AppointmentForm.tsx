@@ -36,7 +36,7 @@ export default function AppointmentForm() {
     patName: '',
     time: '',
     status: true,
-    patient_address: address || ''  // Use connected wallet address
+    patient_address: address || ''
   });
 
   const loadDoctors = async () => {
@@ -95,7 +95,7 @@ export default function AppointmentForm() {
       console.error('Error loading appointment:', error);
     } finally {
       setLoading(false);
-    }
+    } 
   }, [id]);
 
   useEffect(() => {
@@ -117,7 +117,7 @@ export default function AppointmentForm() {
           ...prev, 
           patID: patient.patID,
           patName: patient.patName,
-          patient_address: patient.patient_address
+          patient_address: patient.patient_address || ''
         }));
       }
     }
@@ -128,6 +128,7 @@ export default function AppointmentForm() {
     if (address) {
       setFormData(prev => ({
         ...prev,
+        address: address,
         patient_address: address
       }));
     }
@@ -153,7 +154,7 @@ export default function AppointmentForm() {
         }
         await appointmentService.createAppointment({
           ...formData,
-          patient_address: address  // Use connected wallet address
+          patient_address: address
         });
       }
       navigate('/appointments');
@@ -217,7 +218,7 @@ export default function AppointmentForm() {
         ...prev,
         patID: patient.patID,
         patName: patient.patName,
-        patient_address: patient.patient_address
+        patient_address: patient.patient_address || ''
       }));
     }
   };

@@ -286,35 +286,39 @@ class AppointmentView(APIView):
 
 
 @api_view(['GET'])
-def getAppointmentDoc(self, id):
-
-    appointment = Appointment.objects.filter(docID=id)
-    serializer = AppointmentSerializer(appointment, many=True)
+def getAppointmentDoc(request, id):
+    appointments = Appointment.objects.filter(docID=id)
+    serializer = AppointmentSerializer(appointments, many=True)
     return Response({"status": "success", "data": serializer.data}, status.HTTP_200_OK)
 
 
 @api_view(['GET'])
-def getAppointmentPat(self, id):
-
-    appointment = Appointment.objects.filter(patID=id)
-    serializer = AppointmentSerializer(appointment, many=True)
+def getAppointmentPat(request, id=None, pat_id=None):
+    # If string ID is provided, use that
+    patient_id = pat_id if pat_id is not None else id
+    
+    # Filter appointments by patID
+    appointments = Appointment.objects.filter(patID=patient_id)
+    serializer = AppointmentSerializer(appointments, many=True)
     return Response({"status": "success", "data": serializer.data}, status.HTTP_200_OK)
 
 
 @api_view(['GET'])
-def getCount(self):
-    doctorCount = Doctor.objects.all().count()
-    patientCount = Patient.objects.all().count()
-    return Response({"status": "success", "docCount": doctorCount, "patCount": patientCount}, status.HTTP_200_OK)
+def getCount(request):
+    doctor_count = Doctor.objects.count()
+    patient_count = Patient.objects.count()
+    return Response({
+        'doctor_count': doctor_count,
+        'patient_count': patient_count
+    })
 
 
-@api_view(['GET'])
-def clear(self):
+@api_view(['POST'])
+def clear(request):
     Doctor.objects.all().delete()
-    Appointment.objects.alias().delete()
-    Patient.objects.alias().delete()
-
-    return Response({"status": "success"}, status.HTTP_200_OK)
+    Patient.objects.all().delete()
+    Appointment.objects.all().delete()
+    return Response({'message': 'All data cleared successfully'})
 
 
 class DoctorViewSet(viewsets.ModelViewSet):
@@ -440,34 +444,6 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             return Response({
                 "error": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-@api_view(['GET'])
-def getAppointmentDoc(request, id):
-    appointments = Appointment.objects.filter(docID=id)
-    serializer = AppointmentSerializer(appointments, many=True)
-    return Response(serializer.data)
-
-@api_view(['GET'])
-def getAppointmentPat(request, id):
-    appointments = Appointment.objects.filter(patID=id)
-    serializer = AppointmentSerializer(appointments, many=True)
-    return Response(serializer.data)
-
-@api_view(['GET'])
-def getCount(request):
-    doctor_count = Doctor.objects.count()
-    patient_count = Patient.objects.count()
-    return Response({
-        'doctor_count': doctor_count,
-        'patient_count': patient_count
-    })
-
-@api_view(['POST'])
-def clear(request):
-    Doctor.objects.all().delete()
-    Patient.objects.all().delete()
-    Appointment.objects.all().delete()
-    return Response({'message': 'All data cleared successfully'})
 
 class BlockchainAuthView(APIView):
     authentication_classes = []  # No authentication required

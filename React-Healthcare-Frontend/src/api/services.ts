@@ -61,6 +61,7 @@ export const doctorService = {
   getDoctor: async (id: string) => {
     try {
       const response = await api.get<Doctor>(`/doctor/${id}/`);
+      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error(`Error fetching doctor ${id}:`, error);
@@ -178,8 +179,11 @@ export const appointmentService = {
 
   getAppointmentsByDoctor: async (doctorId: string) => {
     try {
-      const response = await api.get<Appointment[]>(`/getAppointmentDoc/${doctorId}/`);
-      return response.data;
+      const response = await api.get<{status: string, data: Appointment[]}>(`/getAppointmentDoc/${doctorId}`);
+      if (response.data) {
+        return response.data;
+      }
+      return [];
     } catch (error) {
       console.error(`Error fetching appointments for doctor ${doctorId}:`, error);
       return [];
@@ -188,8 +192,11 @@ export const appointmentService = {
 
   getAppointmentsByPatient: async (patientId: string) => {
     try {
-      const response = await api.get<Appointment[]>(`/getAppointmentPat/${patientId}/`);
-      return response.data;
+      const response = await api.get<{status: string, data: Appointment[]}>(`/getAppointmentPat/${patientId}`);
+      if (response.data && response.data.data) {
+        return response.data.data;
+      }
+      return [];
     } catch (error) {
       console.error(`Error fetching appointments for patient ${patientId}:`, error);
       return [];

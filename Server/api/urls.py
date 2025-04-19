@@ -14,7 +14,9 @@ router.register(r'appointment', AppointmentViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('getAppointmentDoc/<int:id>', getAppointmentDoc),
+    path('getAppointmentDoc/<str:id>', getAppointmentDoc),
     path('getAppointmentPat/<int:id>', getAppointmentPat),
+    path('getAppointmentPat/<str:pat_id>', getAppointmentPat),
     path('getCount', getCount),
     path('clear', clear),
     path('api-auth/', include('rest_framework.urls')),
