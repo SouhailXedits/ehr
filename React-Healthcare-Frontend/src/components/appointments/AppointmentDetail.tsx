@@ -103,11 +103,6 @@ export default function AppointmentDetail() {
             </div>
           </div>
         </div>
-        
-        <div className="mt-3 text-xs text-gray-500">
-          <p>Note: If the verification link shows "not found," this may be because the appointment 
-          was created on a different network or with test data.</p>
-        </div>
       </div>
     );
   };

@@ -16,13 +16,13 @@ import {
 } from '../ui/select';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Shield, Info } from 'lucide-react';
+import { Shield, Info, CheckCircle } from 'lucide-react';
 
 export default function AppointmentForm() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { address } = useAuth();
+  const { address, connectWallet } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [doctors, setDoctors] = useState<any[]>([]);
@@ -123,6 +123,23 @@ export default function AppointmentForm() {
     }
   }, [searchParams, patients]);
 
+  useEffect(() => {
+    // Update the form data when wallet address changes
+    if (address) {
+      setFormData(prev => ({
+        ...prev,
+        patient_address: address
+      }));
+    }
+  }, [address]);
+
+  // Get tomorrow's date in YYYY-MM-DD format for min date input
+  const getTomorrowDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -131,7 +148,7 @@ export default function AppointmentForm() {
         await appointmentService.updateAppointment(Number(id), formData as UpdateAppointmentData);
       } else {
         if (!address) {
-          setError('Please connect your wallet to create an appointment');
+          setError('Please connect your MetaMask wallet to create an appointment');
           return;
         }
         await appointmentService.createAppointment({
@@ -152,6 +169,22 @@ export default function AppointmentForm() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    
+    // For date input, validate it's not in the past
+    if (name === 'date') {
+      const selectedDate = new Date(value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time to beginning of day for date comparison
+      
+      if (selectedDate < today) {
+        setError('Appointment date cannot be in the past');
+        return;
+      } else {
+        // Clear error if valid date selected
+        setError('');
+      }
+    }
+    
     setFormData((prev: CreateAppointmentData) => ({ ...prev, [name]: value }));
   };
 
@@ -222,18 +255,40 @@ export default function AppointmentForm() {
         <div className="rounded-lg bg-amber-50 border border-amber-200 p-4 mb-6">
           <div className="flex items-center gap-2 text-amber-700 mb-2">
             <Shield className="h-5 w-5" />
-            <h3 className="font-semibold">Connect Your Wallet</h3>
+            <h3 className="font-semibold">Connect MetaMask</h3>
           </div>
           <p className="text-sm text-amber-600 mb-3">
-            To create blockchain-secured appointments, please connect your Ethereum wallet. 
+            To create blockchain-secured appointments, please connect your MetaMask wallet. 
             This enables secure, tamper-proof appointment records.
           </p>
           <Button 
-            onClick={() => {} /* Call the connectWallet function here */}
-            className="bg-amber-600 hover:bg-amber-700"
+            onClick={connectWallet}
+            className="bg-amber-600 hover:bg-amber-700 flex items-center gap-2"
           >
-            Connect Wallet
+            <img src="/metamask-fox.svg" alt="MetaMask" className="h-5 w-5" />
+            Connect MetaMask
           </Button>
+        </div>
+      )}
+
+      {address && !id && (
+        <div className="rounded-lg bg-green-50 border border-green-200 p-4 mb-6">
+          <div className="flex items-center gap-2 text-green-700 mb-2">
+            <CheckCircle className="h-5 w-5" />
+            <h3 className="font-semibold">MetaMask Connected</h3>
+          </div>
+          <p className="text-sm text-gray-600 mb-2">
+            Your MetaMask wallet is connected. When you create an appointment:
+          </p>
+          <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
+            <li>A small deposit will be taken from your connected wallet</li>
+            <li>The appointment will be recorded on the Ethereum blockchain</li>
+            <li>You'll receive a refund when the appointment is completed</li>
+          </ul>
+          <div className="mt-2 p-2 bg-gray-100 rounded flex items-center gap-2">
+            <span className="text-xs text-gray-500">Connected Address:</span>
+            <code className="text-xs text-gray-700 truncate">{address}</code>
+          </div>
         </div>
       )}
 
@@ -244,8 +299,7 @@ export default function AppointmentForm() {
             <h3 className="font-semibold">Blockchain-Secured Appointment</h3>
           </div>
           <p className="text-sm text-gray-600 mb-2">
-            When you create an appointment, a small deposit will be required to secure your slot. 
-            This is handled automatically through our blockchain integration and provides:
+            This appointment will be secured through the Ethereum blockchain using MetaMask, providing:
           </p>
           <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
             <li>Tamper-proof record of your appointment</li>
@@ -253,9 +307,6 @@ export default function AppointmentForm() {
             <li>Transparent verification for all parties</li>
             <li>Enhanced security for your medical scheduling</li>
           </ul>
-          <p className="text-xs text-gray-500 mt-2">
-            Note: Currently using {address ? 'your connected wallet' : 'a test wallet'} for demonstration purposes.
-          </p>
         </div>
       )}
 
@@ -307,6 +358,7 @@ export default function AppointmentForm() {
               type="date"
               value={formData.date}
               onChange={handleChange}
+              min={getTomorrowDate()}
               required
             />
           </div>

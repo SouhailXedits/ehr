@@ -334,15 +334,29 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             # Convert date and time to timestamp
             appointment_date = request.data.get('date')
             appointment_time = request.data.get('time')
-            timestamp = int(datetime.combine(
+            
+            # Parse date and time
+            appointment_datetime = datetime.combine(
                 datetime.strptime(appointment_date, '%Y-%m-%d').date(),
                 datetime.strptime(appointment_time, '%H:%M').time()
-            ).timestamp())
+            )
+            
+            # Validate that appointment is in the future
+            current_time = datetime.now()
+            if appointment_datetime <= current_time:
+                return Response(
+                    {"error": "Appointment must be scheduled for a future date and time"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                
+            timestamp = int(appointment_datetime.timestamp())
 
             print(f"\n=== Creating Blockchain Appointment ===")
             print(f"Patient Address: {patient_address}")
             print(f"Doctor Address: {doctor.address}")
             print(f"Timestamp: {timestamp}")
+            print(f"Current Time: {int(current_time.timestamp())}")
+            print(f"Appointment Time: {appointment_datetime}")
 
             # Create appointment on blockchain
             blockchain_result = self.blockchain_service.create_appointment(
