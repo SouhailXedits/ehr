@@ -68,7 +68,7 @@ export const doctorService = {
     }
   },
 
-  createDoctor: async (data: Omit<Doctor, 'id'>) => {
+  createDoctor: async (data: FormData) => {
     try {
       const response = await api.post<Doctor>('/doctor/', data);
       return response.data;
@@ -78,7 +78,7 @@ export const doctorService = {
     }
   },
 
-  updateDoctor: async (id: string, data: Partial<Doctor>) => {
+  updateDoctor: async (id: string, data: FormData) => {
     try {
       const response = await api.put<Doctor>(`/doctor/${id}/`, data);
       return response.data;

@@ -207,7 +207,7 @@ export default function DoctorForm() {
                 required
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2" hidden={true}>
               <Label htmlFor="address">Blockchain Address</Label>
               <Input
                 id="address"
