@@ -35,8 +35,13 @@ class Doctor(models.Model):
     docID = models.CharField(max_length=100, unique=True)
     fName = models.CharField(max_length=100)
     lName = models.CharField(max_length=100)
-    address = models.CharField(max_length=100, null=True, blank=True)
+    emailID = models.CharField(max_length=100, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    state = models.CharField(max_length=100, null=True, blank=True)
+    department = models.CharField(max_length=100, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    Doj = models.DateField(null=True, blank=True)  # Date of joining
+    address = models.CharField(max_length=100, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):

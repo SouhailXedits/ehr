@@ -48,6 +48,10 @@ def deploy_contract():
         private_key = os.getenv('PRIVATE_KEY')
         if not private_key:
             raise ValueError("PRIVATE_KEY not found in .env file")
+        
+        # Remove '0x' prefix if present
+        if private_key.startswith('0x'):
+            private_key = private_key[2:]
             
         account = w3.eth.account.from_key(private_key)
         print(f"Deploying from account: {account.address}")
@@ -56,20 +60,34 @@ def deploy_contract():
         balance = w3.eth.get_balance(account.address)
         print(f"Account balance: {w3.from_wei(balance, 'ether')} ETH")
         
-        # Create contract
+        # Estimate gas
         AppointmentContract = w3.eth.contract(abi=abi, bytecode=bytecode)
+        gas_price = w3.eth.gas_price
+        estimated_gas = 3000000  # Reasonable estimate for this contract
+        total_cost_wei = estimated_gas * gas_price
+        total_cost_eth = w3.from_wei(total_cost_wei, 'ether')
+        
+        print(f"Estimated gas: {estimated_gas} units")
+        print(f"Gas price: {w3.from_wei(gas_price, 'gwei')} gwei")
+        print(f"Total estimated cost: {total_cost_eth} ETH")
+        
+        # Check if account has enough funds
+        if balance < total_cost_wei:
+            print(f"\nError: Insufficient funds. Account has {w3.from_wei(balance, 'ether')} ETH but needs {total_cost_eth} ETH.")
+            print("\nPlease add funds to this account in Ganache:")
+            print(f"  1. Open Ganache UI")
+            print(f"  2. Find the account: {account.address}")
+            print(f"  3. Add at least {total_cost_eth} ETH to this account")
+            print(f"  4. Run this script again")
+            return
         
         # Build transaction
         construct_txn = AppointmentContract.constructor().build_transaction({
             'from': account.address,
             'nonce': w3.eth.get_transaction_count(account.address),
-            'gas': 3000000,
-            'gasPrice': w3.eth.gas_price // 2  # Using lower gas price
+            'gas': estimated_gas,
+            'gasPrice': gas_price
         })
-        
-        print(f"Estimated gas: {construct_txn['gas']} units")
-        print(f"Gas price: {w3.from_wei(construct_txn['gasPrice'], 'gwei')} gwei")
-        print(f"Total cost: {w3.from_wei(construct_txn['gas'] * construct_txn['gasPrice'], 'ether')} ETH")
         
         # Sign transaction
         print("Signing transaction...")

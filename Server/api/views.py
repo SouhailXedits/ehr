@@ -107,6 +107,14 @@ class AppointmentView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
+            # Check if doctor has a blockchain address
+            if not doctor.address:
+                logger.error("No doctor blockchain address available")
+                return Response(
+                    {"error": "Doctor blockchain address is not set. Please update the doctor's blockchain address."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
             # Convert date and time to timestamp
             appointment_date = request.data.get('date')
             appointment_time = request.data.get('time')
@@ -120,7 +128,7 @@ class AppointmentView(APIView):
             # Create appointment on blockchain
             blockchain_result = self.blockchain_service.create_appointment(
                 patient_address=patient_address,
-                doctor_address=doctor.address,  # Assuming doctor model has address field
+                doctor_address=doctor.address,
                 timestamp=timestamp
             )
 
@@ -182,6 +190,14 @@ class AppointmentView(APIView):
             appointment = Appointment.objects.get(id=id)
             doctor = Doctor.objects.get(docID=appointment.docID)
 
+            # Check if doctor has a blockchain address
+            if not doctor.address:
+                logger.error("No doctor blockchain address available")
+                return Response(
+                    {"error": "Doctor blockchain address is not set. Please update the doctor's blockchain address."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
             # Update appointment status on blockchain
             blockchain_result = self.blockchain_service.complete_appointment(
                 doctor_address=doctor.address,
@@ -225,9 +241,17 @@ class AppointmentView(APIView):
             appointment = Appointment.objects.get(id=id)
             patient = Patient.objects.get(patID=appointment.patID)
 
+            # Check if patient has a blockchain address
+            if not patient.address:
+                logger.error("No patient blockchain address available")
+                return Response(
+                    {"error": "Patient blockchain address is not set. Please update the patient's blockchain address."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
             # Cancel appointment on blockchain
             blockchain_result = self.blockchain_service.cancel_appointment(
-                user_address=patient.address,  # Assuming patient model has address field
+                user_address=patient.address,
                 appointment_id=appointment.blockchain_id
             )
 
@@ -328,6 +352,13 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             if not patient_address:
                 return Response(
                     {"error": "Patient blockchain address is required"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Check if doctor has a blockchain address
+            if not doctor.address:
+                return Response(
+                    {"error": "Doctor blockchain address is not set. Please update the doctor's blockchain address."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 

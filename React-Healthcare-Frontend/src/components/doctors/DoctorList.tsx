@@ -7,12 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
 // Define a manual interface to match the actual data structure if needed
-interface DoctorWithDocName extends Doctor {
-  docName: string;
-}
 
 export default function DoctorList() {
-  const [doctors, setDoctors] = useState<DoctorWithDocName[]>([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -26,7 +23,7 @@ export default function DoctorList() {
       setLoading(true);
       const data = await doctorService.getDoctors();
       // Cast to DoctorWithDocName to handle the type discrepancy
-      setDoctors(Array.isArray(data) ? data as DoctorWithDocName[] : []);
+      setDoctors(Array.isArray(data) ? data as Doctor[] : []);
     } catch (error) {
       setError('Failed to load doctors');
       console.error('Error loading doctors:', error);
@@ -69,8 +66,8 @@ export default function DoctorList() {
                 <div className="flex items-center space-x-4">
                   <div className="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full bg-gray-100">
                     <div className="flex h-full w-full items-center justify-center rounded-full bg-muted">
-                      {doctor.docName?.split(' ')[0]?.[0] || 'D'}
-                      {doctor.docName?.split(' ')[1]?.[0] || ''}
+                      {doctor.fName?.split(' ')[0]?.[0] || 'D'}
+                      {doctor.fName?.split(' ')[1]?.[0] || ''}
                     </div>
                   </div>
                   <div>

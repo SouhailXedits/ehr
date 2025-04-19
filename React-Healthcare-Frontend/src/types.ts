@@ -1,12 +1,15 @@
 export interface Doctor {
   id: number;
   docID: string;
-  docName: string;
+  fName: string;
+  lName: string;
   emailID: string;
   city: string;
   state: string;
   department: string;
+  created_at: string;
   Doj: string;
+  address?: string;
 }
 
 export interface Patient {

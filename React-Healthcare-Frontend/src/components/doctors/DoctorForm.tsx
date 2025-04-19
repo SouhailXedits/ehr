@@ -17,6 +17,7 @@ interface FormData {
   state: string;
   department: string;
   Doj: string;
+  address: string;
   image: File | null;
 }
 
@@ -34,6 +35,7 @@ export default function DoctorForm() {
     state: '',
     department: '',
     Doj: new Date().toISOString().split('T')[0],
+    address: '',
     image: null
   });
 
@@ -56,6 +58,7 @@ export default function DoctorForm() {
         state: data.state,
         department: data.department,
         Doj: data.Doj,
+        address: data.address || '',
         image: null
       });
     } catch (error) {
@@ -203,6 +206,18 @@ export default function DoctorForm() {
                 onChange={handleChange}
                 required
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="address">Blockchain Address</Label>
+              <Input
+                id="address"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                placeholder="0x..."
+                className="font-mono"
+              />
+              <p className="text-xs text-gray-500">Required for blockchain operations like appointments</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="image">Profile Image</Label>
