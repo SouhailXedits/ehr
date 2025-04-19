@@ -10,9 +10,20 @@ export interface CreateAppointmentData {
   patName: string;
   time: string;
   status: boolean;
+  patient_address: string;
 }
 
-export interface UpdateAppointmentData extends Partial<CreateAppointmentData> {}
+export interface UpdateAppointmentData {
+  date?: string;
+  department?: string;
+  docID?: string;
+  docName?: string;
+  patID?: string;
+  patName?: string;
+  time?: string;
+  status?: boolean;
+  patient_address?: string;
+}
 
 const appointmentService = {
   async getAppointments(): Promise<Appointment[]> {

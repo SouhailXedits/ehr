@@ -1,16 +1,26 @@
-import axios from 'axios';
 import { Patient } from '../types';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+import { api } from '../api/config';
 
 const patientService = {
   async getPatients(): Promise<Patient[]> {
     try {
-      const response = await axios.get(`${API_URL}/patients/`);
+      const response = await api.get('/patients/');
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || 'Failed to fetch patients');
+      if (error.response) {
+        throw new Error(error.response.data?.message || 'Failed to fetch patients');
+      }
+      throw error;
+    }
+  },
+
+  async getPatient(id: string): Promise<Patient> {
+    try {
+      const response = await api.get(`/patients/${id}/`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        throw new Error(error.response.data?.message || 'Failed to fetch patient');
       }
       throw error;
     }
@@ -18,11 +28,11 @@ const patientService = {
 
   async getPatientAppointments(id: string): Promise<any[]> {
     try {
-      const response = await axios.get(`${API_URL}/getAppointmentPat/${id}/`);
+      const response = await api.get(`/getAppointmentPat/${id}/`);
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || 'Failed to fetch patient appointments');
+      if (error.response) {
+        throw new Error(error.response.data?.message || 'Failed to fetch patient appointments');
       }
       throw error;
     }

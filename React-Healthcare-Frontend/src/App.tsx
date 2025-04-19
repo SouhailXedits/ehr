@@ -38,9 +38,9 @@ function App() {
             
             {/* Protected Routes */}
             <Route path="/" element={
-              // <ProtectedRoute>
+              <ProtectedRoute>
                 <Layout />
-              // </ProtectedRoute>
+              </ProtectedRoute>
             }>
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />

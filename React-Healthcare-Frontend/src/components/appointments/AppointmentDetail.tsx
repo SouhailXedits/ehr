@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Appointment } from '../../types';
 import appointmentService from '../../services/appointment';
-import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../ui/card';
 import { Button } from '../ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ExternalLink, Shield, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function AppointmentDetail() {
@@ -42,6 +42,74 @@ export default function AppointmentDetail() {
       setError('Failed to cancel appointment');
       console.error('Error canceling appointment:', error);
     }
+  };
+
+  const renderBlockchainVerification = () => {
+    if (!appointment?.blockchain_tx) return null;
+    
+    // Configure blockchain explorer URL based on environment
+    // You can update this to use environment variables or a config file
+    const explorerBaseUrl = "https://sepolia.etherscan.io"; // For Sepolia testnet
+    const etherscanUrl = `${explorerBaseUrl}/tx/${appointment.blockchain_tx}`;
+    
+    // Function to handle verification link click
+    const handleVerifyClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+      // Optional: add analytics tracking or validation here
+      // If you want to prevent the link from opening when hash is invalid
+      // e.preventDefault();
+      // You could also show a modal with more information
+    };
+    
+    return (
+      <div className="mt-6 border rounded-lg p-4 bg-emerald-50">
+        <div className="flex items-center gap-2 text-emerald-700 mb-2">
+          <Shield className="h-5 w-5" />
+          <h3 className="font-semibold">Blockchain Verified Appointment</h3>
+        </div>
+        
+        <p className="text-sm text-gray-600 mb-3">
+          This appointment is secured on the blockchain, ensuring it cannot be tampered with 
+          and providing a permanent record of your medical schedule.
+        </p>
+        
+        <div className="space-y-2 text-sm">
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-4 w-4 text-emerald-500" />
+            <span>Immutable record - cannot be altered without your knowledge</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-4 w-4 text-emerald-500" />
+            <span>Verifiable by any party with your permission</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-4 w-4 text-emerald-500" />
+            <span>Financial security through deposit mechanism</span>
+          </div>
+        </div>
+        
+        <div className="mt-4 flex flex-col space-y-2">
+          <div className="flex flex-col">
+            <span className="text-xs font-medium text-gray-500">Blockchain ID:</span>
+            <code className="text-sm bg-gray-100 px-2 py-1 rounded">
+              {appointment.blockchain_id || 'Not available'}
+            </code>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xs font-medium text-gray-500">Transaction Hash:</span>
+            <div className="flex items-center">
+              <code className="text-sm bg-gray-100 px-2 py-1 rounded truncate ">
+                {appointment.blockchain_tx}
+              </code>
+            </div>
+          </div>
+        </div>
+        
+        <div className="mt-3 text-xs text-gray-500">
+          <p>Note: If the verification link shows "not found," this may be because the appointment 
+          was created on a different network or with test data.</p>
+        </div>
+      </div>
+    );
   };
 
   if (loading) {
@@ -109,8 +177,11 @@ export default function AppointmentDetail() {
               <span className="text-muted-foreground">{appointment.patName}</span>
             </div>
           </div>
+          
+          {renderBlockchainVerification()}
+          
           {appointment.status && (
-            <Button variant="destructive" onClick={handleCancel}>
+            <Button variant="destructive" onClick={handleCancel} className="mt-6">
               Cancel Appointment
             </Button>
           )}

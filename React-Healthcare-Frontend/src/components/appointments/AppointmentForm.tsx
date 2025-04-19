@@ -15,11 +15,14 @@ import {
   SelectValue,
 } from '../ui/select';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+import { Shield, Info } from 'lucide-react';
 
 export default function AppointmentForm() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { address } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [doctors, setDoctors] = useState<any[]>([]);
@@ -32,7 +35,8 @@ export default function AppointmentForm() {
     patID: '',
     patName: '',
     time: '',
-    status: true
+    status: true,
+    patient_address: address || ''  // Use connected wallet address
   });
 
   const loadDoctors = async () => {
@@ -83,7 +87,8 @@ export default function AppointmentForm() {
         patID: data.patID,
         patName: data.patName,
         time: data.time,
-        status: data.status
+        status: data.status,
+        patient_address: data.patient_address || ''
       });
     } catch (error) {
       setError('Failed to load appointment');
@@ -111,7 +116,8 @@ export default function AppointmentForm() {
         setFormData((prev: CreateAppointmentData) => ({ 
           ...prev, 
           patID: patient.patID,
-          patName: patient.patName
+          patName: patient.patName,
+          patient_address: patient.patient_address
         }));
       }
     }
@@ -124,7 +130,14 @@ export default function AppointmentForm() {
       if (id) {
         await appointmentService.updateAppointment(Number(id), formData as UpdateAppointmentData);
       } else {
-        await appointmentService.createAppointment(formData);
+        if (!address) {
+          setError('Please connect your wallet to create an appointment');
+          return;
+        }
+        await appointmentService.createAppointment({
+          ...formData,
+          patient_address: address  // Use connected wallet address
+        });
       }
       navigate('/appointments');
     } catch (error) {
@@ -170,7 +183,8 @@ export default function AppointmentForm() {
       setFormData((prev: CreateAppointmentData) => ({
         ...prev,
         patID: patient.patID,
-        patName: patient.patName
+        patName: patient.patName,
+        patient_address: patient.patient_address
       }));
     }
   };
@@ -201,6 +215,47 @@ export default function AppointmentForm() {
       {error && (
         <div className="rounded-lg bg-destructive/10 p-4 text-destructive">
           <p>{error}</p>
+        </div>
+      )}
+
+      {!address && !id && (
+        <div className="rounded-lg bg-amber-50 border border-amber-200 p-4 mb-6">
+          <div className="flex items-center gap-2 text-amber-700 mb-2">
+            <Shield className="h-5 w-5" />
+            <h3 className="font-semibold">Connect Your Wallet</h3>
+          </div>
+          <p className="text-sm text-amber-600 mb-3">
+            To create blockchain-secured appointments, please connect your Ethereum wallet. 
+            This enables secure, tamper-proof appointment records.
+          </p>
+          <Button 
+            onClick={() => {} /* Call the connectWallet function here */}
+            className="bg-amber-600 hover:bg-amber-700"
+          >
+            Connect Wallet
+          </Button>
+        </div>
+      )}
+
+      {!id && (
+        <div className="rounded-lg bg-blue-50 border border-blue-200 p-4 mb-6">
+          <div className="flex items-center gap-2 text-blue-700 mb-2">
+            <Info className="h-5 w-5" />
+            <h3 className="font-semibold">Blockchain-Secured Appointment</h3>
+          </div>
+          <p className="text-sm text-gray-600 mb-2">
+            When you create an appointment, a small deposit will be required to secure your slot. 
+            This is handled automatically through our blockchain integration and provides:
+          </p>
+          <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
+            <li>Tamper-proof record of your appointment</li>
+            <li>Automated deposit refund when appointments are completed</li>
+            <li>Transparent verification for all parties</li>
+            <li>Enhanced security for your medical scheduling</li>
+          </ul>
+          <p className="text-xs text-gray-500 mt-2">
+            Note: Currently using {address ? 'your connected wallet' : 'a test wallet'} for demonstration purposes.
+          </p>
         </div>
       )}
 

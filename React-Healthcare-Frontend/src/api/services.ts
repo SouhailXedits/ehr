@@ -15,12 +15,18 @@ interface BlockchainAuthData {
 }
 
 type AuthService = {
+  getNonce: (address: string) => Promise<{ nonce: string }>;
   authenticate: (data: BlockchainAuthData) => Promise<{ token: string; user: User }>;
   verifySession: () => Promise<{ user: User }>;
   logout: () => void;
 };
 
 export const authService: AuthService = {
+  getNonce: async (address: string) => {
+    const response = await api.get<{ nonce: string }>(`/auth/nonce/${address}/`);
+    return response.data;
+  },
+
   authenticate: async (data: BlockchainAuthData) => {
     const response = await api.post<{ token: string; user: User }>('/auth/authenticate/', data);
     return response.data;
@@ -223,7 +229,7 @@ export const appointmentService = {
 export const medicalRecordService = {
   getMedicalRecords: async () => {
     try {
-      const response = await api.get<MedicalRecord[]>('/');
+      const response = await api.get<MedicalRecord[]>('/medical-records/');
       return response.data;
     } catch (error) {
       console.error('Error fetching medical records:', error);
@@ -233,7 +239,7 @@ export const medicalRecordService = {
 
   getMedicalRecordsByPatient: async (patientId: string) => {
     try {
-      const response = await api.get<MedicalRecord[]>(`/`);
+      const response = await api.get<MedicalRecord[]>(`/medical-records/patient/${patientId}/`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching medical records for patient ${patientId}:`, error);
@@ -243,7 +249,7 @@ export const medicalRecordService = {
 
   createMedicalRecord: async (data: Omit<MedicalRecord, 'id'>) => {
     try {
-      const response = await api.post<MedicalRecord>('/', data);
+      const response = await api.post<MedicalRecord>('/medical-records/', data);
       return response.data;
     } catch (error) {
       console.error('Error creating medical record:', error);
@@ -253,7 +259,7 @@ export const medicalRecordService = {
 
   updateMedicalRecord: async (id: string, data: Partial<MedicalRecord>) => {
     try {
-      const response = await api.put<MedicalRecord>(`/`, data);
+      const response = await api.put<MedicalRecord>(`/medical-records/${id}/`, data);
       return response.data;
     } catch (error) {
       console.error(`Error updating medical record ${id}:`, error);
@@ -263,10 +269,10 @@ export const medicalRecordService = {
   
   deleteMedicalRecord: async (id: string) => {
     try {
-      await api.delete(`/`);
+      await api.delete(`/medical-records/${id}/`);
     } catch (error) {
       console.error(`Error deleting medical record ${id}:`, error);
       throw error;
     }
   },
-}; 
+};

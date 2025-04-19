@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     DoctorViewSet, PatientViewSet, AppointmentViewSet,
     getAppointmentDoc, getAppointmentPat, getCount, clear,
-    BlockchainAuthView
+    BlockchainAuthView, SessionVerificationView, GetNonceView
 )
 
 router = DefaultRouter()
@@ -19,4 +19,6 @@ urlpatterns = [
     path('clear', clear),
     path('api-auth/', include('rest_framework.urls')),
     path('auth/authenticate/', BlockchainAuthView.as_view(), name='authenticate'),
+    path('auth/verify-session/', SessionVerificationView.as_view(), name='verify-session'),
+    path('auth/nonce/<str:address>/', GetNonceView.as_view(), name='get-nonce'),
 ]

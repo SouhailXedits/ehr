@@ -13,6 +13,9 @@ export interface Patient {
   id: number;
   patID: string;
   patName: string;
+  patContact: string;
+  patEmail: string;
+  patient_address: string;
 }
 
 export interface Appointment {
@@ -25,6 +28,9 @@ export interface Appointment {
   patName: string;
   time: string;
   status: boolean;
+  patient_address: string | null;
+  blockchain_id?: string | number | null;
+  blockchain_tx?: string | null;
 }
 
 export interface User {

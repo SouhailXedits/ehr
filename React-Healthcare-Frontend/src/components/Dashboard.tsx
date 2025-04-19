@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
+import { Shield, Lock, FileCheck, Clock, RefreshCw } from 'lucide-react';
 import { doctorService, patientService, appointmentService } from '../api/services';
 
 export default function Dashboard() {
@@ -154,6 +155,84 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Blockchain Benefits Card */}
+      <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Shield className="h-5 w-5 text-blue-600" />
+            <CardTitle>Blockchain-Powered Healthcare</CardTitle>
+          </div>
+          <CardDescription>
+            Our EHR system uses blockchain technology to enhance security, privacy, and trust
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="flex items-start gap-3">
+              <div className="mt-1 p-2 bg-blue-100 rounded-full">
+                <Lock className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-medium text-blue-800">Immutable Records</h3>
+                <p className="text-sm text-gray-600">
+                  All appointments are securely stored on the blockchain, creating 
+                  permanent, tamper-proof medical records that cannot be altered.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="mt-1 p-2 bg-blue-100 rounded-full">
+                <FileCheck className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-medium text-blue-800">Verifiable Appointments</h3>
+                <p className="text-sm text-gray-600">
+                  Every appointment can be independently verified on the blockchain, 
+                  providing proof of medical visits for insurance or legal purposes.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="mt-1 p-2 bg-blue-100 rounded-full">
+                <Clock className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-medium text-blue-800">Financial Security</h3>
+                <p className="text-sm text-gray-600">
+                  Deposits for appointments are managed through smart contracts, ensuring 
+                  fair refund policies and reducing no-shows.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="mt-1 p-2 bg-blue-100 rounded-full">
+                <RefreshCw className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="font-medium text-blue-800">Transparent History</h3>
+                <p className="text-sm text-gray-600">
+                  Access your complete appointment history with cryptographic proof of 
+                  when appointments were scheduled, confirmed, and completed.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-4 p-3 bg-blue-100 rounded-md text-sm text-blue-800">
+            <p className="font-medium">How it works:</p>
+            <p className="text-gray-600 mt-1">
+              When you book an appointment, it's recorded on the Ethereum blockchain with a 
+              unique transaction ID. This creates a permanent record that can be verified by 
+              you or your healthcare providers. Visit any appointment detail page to see 
+              blockchain verification information.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 } 

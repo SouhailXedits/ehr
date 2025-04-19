@@ -108,8 +108,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const authenticateWithBackend = async (address: string) => {
     try {
       const signer = await provider?.getSigner();
-      const message = "Sign this message to authenticate with EHR system";
-      const signature = await signer?.signMessage(message);
+      if (!signer) {
+        throw new Error('No signer available');
+      }
+
+      // First, get the nonce from the backend
+      const nonceResponse = await authService.getNonce(address);
+      const message = `Sign this message to authenticate with EHR system. Nonce: ${nonceResponse.nonce}`;
+      
+      // Sign the message with the nonce
+      const signature = await signer.signMessage(message);
       
       if (signature) {
         const response = await authService.authenticate({ address, signature });
