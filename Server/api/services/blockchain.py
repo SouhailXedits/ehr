@@ -118,7 +118,7 @@ class BlockchainService:
             signed_tx = Account.sign_transaction(tx, patient_private_key)
             
             # Send the transaction
-            tx_hash = self.w3.eth.send_raw_transaction(signed_tx.raw_transaction)
+            tx_hash = self.w3.eth.send_raw_transaction(signed_tx.rawTransaction)
             logger.info(f"Transaction Hash: {tx_hash.hex()}")
             
             # Wait for receipt
@@ -205,7 +205,7 @@ class BlockchainService:
             signed_tx = Account.sign_transaction(tx, self.private_key)
             
             # Send the transaction
-            tx_hash = self.w3.eth.send_raw_transaction(signed_tx.raw_transaction)
+            tx_hash = self.w3.eth.send_raw_transaction(signed_tx.rawTransaction)
             
             # Wait for receipt
             receipt = self.w3.eth.wait_for_transaction_receipt(tx_hash)
@@ -242,7 +242,7 @@ class BlockchainService:
             signed_tx = Account.sign_transaction(tx, self.private_key)
             
             # Send the transaction
-            tx_hash = self.w3.eth.send_raw_transaction(signed_tx.raw_transaction)
+            tx_hash = self.w3.eth.send_raw_transaction(signed_tx.rawTransaction)
             
             # Wait for receipt
             receipt = self.w3.eth.wait_for_transaction_receipt(tx_hash)
@@ -279,7 +279,7 @@ class BlockchainService:
             signed_tx = Account.sign_transaction(tx, self.private_key)
             
             # Send the transaction
-            tx_hash = self.w3.eth.send_raw_transaction(signed_tx.raw_transaction)
+            tx_hash = self.w3.eth.send_raw_transaction(signed_tx.rawTransaction)
             
             # Wait for receipt
             receipt = self.w3.eth.wait_for_transaction_receipt(tx_hash)

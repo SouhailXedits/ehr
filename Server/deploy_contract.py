@@ -95,7 +95,7 @@ def deploy_contract():
         
         # Send transaction
         print("Sending transaction...")
-        tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
+        tx_hash = w3.eth.send_raw_transaction(signed.rawTransaction)
         
         # Wait for receipt
         print("Waiting for transaction receipt...")
